@@ -61,7 +61,7 @@ public class ScreenCaptureController extends AbstractVideoCaptureController {
                             // thread and we cannot synchronize with it.
                         }
                     });    
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
                         Log.e(TAG, "Error stopping video capturer", e);
                     }
                     
