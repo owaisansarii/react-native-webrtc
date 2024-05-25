@@ -43,13 +43,16 @@ public class ScreenCaptureController extends AbstractVideoCaptureController {
             @Override
             public void onOrientationChanged(int orientation) {
                 if (isCapturing) {
-                    DisplayMetrics displayMetrics = DisplayUtils.getDisplayMetrics((Activity) context);
-                    final int width = displayMetrics.widthPixels;
-                    final int height = displayMetrics.heightPixels;
+                    Log.d(TAG, "Orientation changed to " + orientation);
+                    try {
+                        DisplayMetrics displayMetrics = DisplayUtils.getDisplayMetrics((Activity) context);
+                        Log.d(TAG, "Display metrics: " + displayMetrics.widthPixels + "x" + displayMetrics.heightPixels);
+                        final int width = displayMetrics.widthPixels;
+                        final int height = displayMetrics.heightPixels;
 
-                    // Pivot to the executor thread because videoCapturer.changeCaptureFormat runs in the main
-                    // thread and may deadlock.
-                    ThreadUtils.runOnExecutor(() -> {
+                        // Pivot to the executor thread because videoCapturer.changeCaptureFormat runs in the main
+                        // thread and may deadlock.
+                        ThreadUtils.runOnExecutor(() -> {
                         try {
                             videoCapturer.changeCaptureFormat(width, height, DEFAULT_FPS);
                         } catch (Exception ex) {
@@ -57,7 +60,11 @@ public class ScreenCaptureController extends AbstractVideoCaptureController {
                             // We ignore exceptions here. The video capturer runs on its own
                             // thread and we cannot synchronize with it.
                         }
-                    });
+                    });    
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "Error stopping video capturer", e);
+                    }
+                    
                 }
             }
         };
